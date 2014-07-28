@@ -1,154 +1,114 @@
 function MineSweeper(rowSize, columnSize, numberOfMines, elementId) {
-	this.rowSize = rowSize || 8;
-	this.columnSize = columnSize || 8;
-	this.numberOfMines = numberOfMines || 10;
+
 	this.mineLocations = {};
-	this.mineField = {};
-	this.playerMineMap = {};
+	this.mineField = new MineField(rowSize, columnSize, numberOfMines);
+	this.playerMineMap = new Grid(rowSize, columnSize);
 	this.domElement = document.getElementById(elementId);
-	this.MINE = "!";
 	this.FLAG = "!";
 
-	this.newMineField();
 	this.buildDomMineField();
 }
 
-MineSweeper.prototype.newMineField = function() {
-	this.createEmptyMineField();
-	this.placeMines();
-	this.placeNumbers();
-};
-
-MineSweeper.prototype.createEmptyMineField = function() {
-	var gridSize = this.rowSize*this.columnSize;
-
-	for(var i=1; i <= gridSize; i++){
-		this.mineField[i] = 0;
-	}
-};
-
-MineSweeper.prototype.placeMines = function() {
-	var minesLeft = this.numberOfMines,
-		gridSize = this.rowSize*this.columnSize,
-		testLocation,
-		mineLocations = [];
-
-	while(minesLeft > 0) {
-
-		testLocation = Math.ceil(Math.random()*gridSize);
-		if (!(testLocation in mineLocations)) {
-			this.mineField[testLocation] = this.MINE;
-			mineLocations.push(testLocation);
-			minesLeft -= 1;
-		}
-	}
-
-	return mineLocations;
-};
-
-MineSweeper.prototype.placeNumbers = function() {
-	var gridSize = this.rowSize*this.columnSize,
-		numberAdjacentMines = 0;
-
-	for(var i=1; i <= gridSize; i++){
-		numberAdjacentMines = 0;
-		if(this.mineField[i] !== this.MINE){
-			//look around and count mines
-
-			//Left
-			if(i%this.rowSize !== 1){
-				numberAdjacentMines += this.mineField[i-1] === this.MINE ? 1 : 0;
-				numberAdjacentMines += this.mineField[i+this.rowSize-1] === this.MINE ? 1 : 0;
-				numberAdjacentMines += this.mineField[i-this.rowSize-1] === this.MINE ? 1 : 0;
-			}
-
-			//Right
-			if(i%this.rowSize !== 0){
-				numberAdjacentMines += this.mineField[i+1] === this.MINE ? 1 : 0;
-				numberAdjacentMines += this.mineField[i+this.rowSize+1] === this.MINE ? 1 : 0;
-				numberAdjacentMines += this.mineField[i-this.rowSize+1] === this.MINE ? 1 : 0;
-			}
-
-			//Top
-			numberAdjacentMines += this.mineField[i-this.rowSize] === this.MINE ? 1 : 0;
-	
-			//Bottom
-			numberAdjacentMines += this.mineField[i+this.rowSize] === this.MINE ? 1 : 0;
-			
-			this.mineField[i] = numberAdjacentMines;
-		}
-	}
-};
-
 MineSweeper.prototype.markPlayersMineMap = function(tileLocation, typeOfMark) {
-	this.playerMineMap[tileLocation] = typeOfMark === this.FLAG ? this.FLAG : this.mineField[tileLocation];
+
+	var fieldValue = this.mineField.field.tileValue(tileLocation);
+
+	if(fieldValue === this.mineField.MINE && typeOfMark !== this.FLAG){
+		//player loses
+		console.log("You lose");
+	}
+	else{
+		if(fieldValue !== 0){
+			this.playerMineMap.tileValue(tileLocation, fieldValue);
+		}
+		else{
+			this.connectedSafeTiles(tileLocation);
+		}
+	}
+};
+
+MineSweeper.prototype.connectedSafeTiles = function(tileLocation){
+	var zeroLocations = [];
+	var visited = {};
+	var neighbors;
+	var neighborIndex;
+	var currentLocation;
+
+	if(this.mineField.field.tileValue(tileLocation) === 0){
+		zeroLocations.push(tileLocation);
+
+		while(zeroLocations.length > 0){
+			currentLocation = zeroLocations.pop();
+			neighbors = this.playerMineMap.nearestNeighbors(currentLocation);
+			visited[currentLocation] = true;
+
+			for(var neighbor in neighbors){
+				neighborIndex = neighbors[neighbor];
+				fieldValue = this.mineField.field.tileValue(neighborIndex);
+				this.playerMineMap.tileValue(neighborIndex, fieldValue);
+				if(fieldValue === 0 && !(neighborIndex in visited)){
+					zeroLocations.push(neighborIndex);
+				}
+			}
+		}
+	}
+};
+
+MineSweeper.prototype.isFieldClear = function() {
+	var gridSize = this.playerMineMap.rowSize*this.playerMineMap.columnSize;
+	var fieldValue;
+	for(var i=0; i<gridSize; i++){
+		fieldValue = this.mineField.field.tileValue(i+1);
+		if(fieldValue !== this.mineField.MINE){
+			if(this.playerMineMap.tileValue(i+1) !== fieldValue){
+				return false;
+			}
+		}
+	}
+	return true;
 };
 
 MineSweeper.prototype.endGame = function() {
 	//let player know they won or lost
 };
 
-MineSweeper.prototype.nearestNeighbors = function(grid, tileLocation){
-	//Left
-	if(tileLocation%this.rowSize !== 1){
-		numberAdjacentMines += this.mineField[tileLocation-1] === grid.MINE ? 1 : 0;
-		numberAdjacentMines += this.mineField[tileLocation+grid.rowSize-1] === grid.MINE ? 1 : 0;
-		numberAdjacentMines += this.mineField[tileLocation-grid.rowSize-1] === grid.MINE ? 1 : 0;
+MineSweeper.prototype.syncDom = function() {
+	var tiles = this.domElement.getElementsByTagName("input");
+	var gridSize = this.playerMineMap.rowSize*this.playerMineMap.columnSize;
+	for(var i=0; i<gridSize; i++){
+		if(this.playerMineMap.tileValue(i+1) !== "-"){
+			tiles[i].checked = true;
+		}
 	}
-
-	//Right
-	if(i%this.rowSize !== 0){
-		numberAdjacentMines += this.mineField[tileLocation+1] === this.MINE ? 1 : 0;
-		numberAdjacentMines += this.mineField[tileLocation+this.rowSize+1] === this.MINE ? 1 : 0;
-		numberAdjacentMines += this.mineField[tileLocation-this.rowSize+1] === this.MINE ? 1 : 0;
-	}
-
-	//Top
-	numberAdjacentMines += this.mineField[tileLocation-this.rowSize] === this.MINE ? 1 : 0;
-
-	//Bottom
-	numberAdjacentMines += this.mineField[tileLocation+this.rowSize] === this.MINE ? 1 : 0;
-			
 };
-
-MineSweeper.prototype.printMineField = function() {
-	var gridSize = this.rowSize*this.columnSize,
-		mineFieldString = "";
-
-	for(var i=1; i<=gridSize; i++){
-		mineFieldString += this.mineField[i] + " ";
-		mineFieldString += i%this.rowSize === 0 ? "\n" : "";
-	}
-
-	console.log(mineFieldString);
-};
-
 
 MineSweeper.prototype.buildDomMineField = function() {
 	var root = this.domElement,
 		grid = document.createDocumentFragment(),
 		id ="",
+		rowSize = this.mineField.field.rowSize,
+		columnSize = this.mineField.field.columnSize,
 		row, cell;
 
 	var body = grid.appendChild(document.createElement("tbody"));
 
-	for(var i=1; i<=this.columnSize; i++){
+	for(var i=1; i<=columnSize; i++){
 		var tr = document.createElement("tr");
 
 		row = body.appendChild(tr);
 
-		for(var j=1; j<=this.rowSize; j++){
+		for(var j=1; j<=rowSize; j++){
 			var td = document.createElement("td"),
 				input = document.createElement("input"),
 				label = document.createElement("label");
 
-			id = "tile-"+((i-1)*this.columnSize + j);
+			id = "tile-"+((i-1)*columnSize + j);
 			cell = row.appendChild(td);
 			input.setAttribute("id", id);
 			input.setAttribute("type", "radio");
 			cell.appendChild(input);
 			label.setAttribute("for", id);
-			label.innerHTML =  ((i-1)*this.columnSize + j);
+			label.innerHTML =  this.mineField.field.tileValue((i-1)*columnSize + j);//((i-1)*this.columnSize + j);
 			cell.appendChild(label);
 		}
 	}

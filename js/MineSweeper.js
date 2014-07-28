@@ -1,11 +1,16 @@
-function MineSweeper(rowSize, columnSize, numberOfMines) {
+function MineSweeper(rowSize, columnSize, numberOfMines, elementId) {
 	this.rowSize = rowSize || 8;
 	this.columnSize = columnSize || 8;
 	this.numberOfMines = numberOfMines || 10;
 	this.mineLocations = {};
 	this.mineField = {};
-	this.domElement = undefined;
+	this.playerMineMap = {};
+	this.domElement = document.getElementById(elementId);
 	this.MINE = "!";
+	this.FLAG = "!";
+
+	this.newMineField();
+	this.buildDomMineField();
 }
 
 MineSweeper.prototype.newMineField = function() {
@@ -75,6 +80,36 @@ MineSweeper.prototype.placeNumbers = function() {
 	}
 };
 
+MineSweeper.prototype.markPlayersMineMap = function(tileLocation, typeOfMark) {
+	this.playerMineMap[tileLocation] = typeOfMark === this.FLAG ? this.FLAG : this.mineField[tileLocation];
+};
+
+MineSweeper.prototype.endGame = function() {
+	//let player know they won or lost
+};
+
+MineSweeper.prototype.nearestNeighbors = function(grid, tileLocation){
+	//Left
+	if(tileLocation%this.rowSize !== 1){
+		numberAdjacentMines += this.mineField[tileLocation-1] === grid.MINE ? 1 : 0;
+		numberAdjacentMines += this.mineField[tileLocation+grid.rowSize-1] === grid.MINE ? 1 : 0;
+		numberAdjacentMines += this.mineField[tileLocation-grid.rowSize-1] === grid.MINE ? 1 : 0;
+	}
+
+	//Right
+	if(i%this.rowSize !== 0){
+		numberAdjacentMines += this.mineField[tileLocation+1] === this.MINE ? 1 : 0;
+		numberAdjacentMines += this.mineField[tileLocation+this.rowSize+1] === this.MINE ? 1 : 0;
+		numberAdjacentMines += this.mineField[tileLocation-this.rowSize+1] === this.MINE ? 1 : 0;
+	}
+
+	//Top
+	numberAdjacentMines += this.mineField[tileLocation-this.rowSize] === this.MINE ? 1 : 0;
+
+	//Bottom
+	numberAdjacentMines += this.mineField[tileLocation+this.rowSize] === this.MINE ? 1 : 0;
+			
+};
 
 MineSweeper.prototype.printMineField = function() {
 	var gridSize = this.rowSize*this.columnSize,
@@ -87,5 +122,38 @@ MineSweeper.prototype.printMineField = function() {
 
 	console.log(mineFieldString);
 };
+
+
+MineSweeper.prototype.buildDomMineField = function() {
+	var root = this.domElement,
+		grid = document.createDocumentFragment(),
+		id ="",
+		row, cell;
+
+	var body = grid.appendChild(document.createElement("tbody"));
+
+	for(var i=1; i<=this.columnSize; i++){
+		var tr = document.createElement("tr");
+
+		row = body.appendChild(tr);
+
+		for(var j=1; j<=this.rowSize; j++){
+			var td = document.createElement("td"),
+				input = document.createElement("input"),
+				label = document.createElement("label");
+
+			id = "tile-"+((i-1)*this.columnSize + j);
+			cell = row.appendChild(td);
+			input.setAttribute("id", id);
+			input.setAttribute("type", "radio");
+			cell.appendChild(input);
+			label.setAttribute("for", id);
+			label.innerHTML =  ((i-1)*this.columnSize + j);
+			cell.appendChild(label);
+		}
+	}
+	root.appendChild(grid);
+};
+
 
 

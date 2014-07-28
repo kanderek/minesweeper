@@ -6,7 +6,7 @@
 <body>
 
 <table id="mine-field">
-	<tbody>
+<!-- 	<tbody>
 		<tr>
 			<td>
 				<input type="radio" id="tile-A1">
@@ -279,10 +279,27 @@
 				<label for="tile-H8">A8</label>
 			</td>
 		</tr>
-	</tbody>
+	</tbody> -->
 </table>
 
 <script src="js/MineSweeper.js"></script>
+<script>
+	var minesweeper = new MineSweeper(8, 8, 10, "mine-field");
+
+	minesweeper.domElement.addEventListener("click", handleChange, false);
+
+	function handleChange(event) {
+		console.log(event.target);
+		if(event.target.id){
+			var index = event.target.id.slice(5);
+			event.target.nextSibling.innerHTML = minesweeper.mineField[index];
+		}
+		if(event.shiftKey){
+			console.log("shift key was held down");
+		}
+	}
+
+</script>
 </body>
 
 </html>

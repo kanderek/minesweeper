@@ -3,8 +3,7 @@ function MineField(rowSize, columnSize, numberOfMines){
 	this.field =  new Grid(rowSize, columnSize);
 	this.MINE = "!";
 
-	// this.field.createEmptyGrid();
-	this.placeMines();
+	this.mineLocations = this.placeMines();
 	this.placeNumbers();
 }
 

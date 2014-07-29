@@ -1,6 +1,5 @@
 function MineSweeper(rowSize, columnSize, numberOfMines, elementId) {
 
-	this.mineLocations = {};
 	this.mineField = new MineField(rowSize, columnSize, numberOfMines);
 	this.playerMineMap = new Grid(rowSize, columnSize);
 	this.domElement = document.getElementById(elementId);
@@ -74,6 +73,33 @@ MineSweeper.prototype.isFieldClear = function() {
 
 MineSweeper.prototype.endGame = function() {
 	//let player know they won or lost
+};
+
+MineSweeper.prototype.hint = function() {
+    var that = this;
+    
+    this.addMineClass("show-mines");
+    setTimeout(function(){
+        that.removeMineClass("show-mines");
+    }, 2000);
+};
+
+MineSweeper.prototype.addMineClass = function(mineClass) {
+    var labels = this.domElement.getElementsByTagName("label");
+    var mineLocations = this.mineField.mineLocations;
+
+    for(var i=0, numberOfMines=mineLocations.length; i<numberOfMines; i++){
+        labels[mineLocations[i] - 1].classList.add(mineClass);
+    }
+};
+
+MineSweeper.prototype.removeMineClass = function(mineClass) {
+    var labels = this.domElement.getElementsByTagName("label");
+    var mineLocations = this.mineField.mineLocations;
+
+    for(var i=0, numberOfMines=mineLocations.length; i<numberOfMines; i++){
+        labels[mineLocations[i] - 1].classList.remove(mineClass);
+    }
 };
 
 MineSweeper.prototype.syncDom = function() {

@@ -195,6 +195,10 @@ main {
 	background-color: #47300A;
 }
 
+#mine-field .show-mines {
+	background-color: red;
+}
+
 .timer,
 .difficulty,
 .validate,

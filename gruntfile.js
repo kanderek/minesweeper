@@ -33,8 +33,8 @@ module.exports = function (grunt) {
 
     // define source files and their destinations
     uglify: {
-        files: { 
-            src: 'build/js/*.js',  // source files mask
+        files: {
+            src: 'js/main.js',  // source files mask
             dest: '',    // destination folder
             expand: true,    // allow dynamic building
             flatten: false,   // remove all unnecessary nesting
@@ -42,7 +42,7 @@ module.exports = function (grunt) {
         }
     },
     watch: {
-        js:  { files: 'build/js/*.js', tasks: [ 'uglify' ] }
+        js:  { files: 'js/main.js', tasks: [ 'uglify' ] }
     },
     concat: {
         options: {

@@ -16,9 +16,9 @@ describe("Grid", function(){
 		});
 
 		it("should have an empty grid", function(){
-			expect(grid.grid[1]).toEqual(0);
-			expect(grid.grid[32]).toEqual(0);
-			expect(grid.grid[64]).toEqual(0);
+			expect(grid.grid[1]).toEqual('-');
+			expect(grid.grid[32]).toEqual('-');
+			expect(grid.grid[64]).toEqual('-');
 		});
 	});
 
@@ -30,7 +30,7 @@ describe("Grid", function(){
 
 	describe("tileValue...should set or return value of a tile at a specific location", function(){
 		it("should return 0 at location 24", function(){
-			expect(grid.tileValue(24)).toEqual(0);
+			expect(grid.tileValue(24)).toEqual('-');
 		});
 
 		it("should return 12 at location 24 when value 12 is sent to function", function(){

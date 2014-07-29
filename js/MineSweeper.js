@@ -6,16 +6,19 @@ function MineSweeper(rowSize, columnSize, numberOfMines, elementId) {
 	this.domElement = document.getElementById(elementId);
 	this.FLAG = "!";
 
+    this.clearDomMineField();
 	this.buildDomMineField();
 }
 
 MineSweeper.prototype.markPlayersMineMap = function(tileLocation, typeOfMark) {
 
 	var fieldValue = this.mineField.field.tileValue(tileLocation);
+    var losingMark = false;
 
 	if(fieldValue === this.mineField.MINE && typeOfMark !== this.FLAG){
 		//player loses
 		console.log("You lose");
+        losingMark = true;
 	}
 	else{
 		if(fieldValue !== 0){
@@ -25,6 +28,7 @@ MineSweeper.prototype.markPlayersMineMap = function(tileLocation, typeOfMark) {
 			this.connectedSafeTiles(tileLocation);
 		}
 	}
+    return losingMark;
 };
 
 MineSweeper.prototype.connectedSafeTiles = function(tileLocation){
@@ -75,9 +79,13 @@ MineSweeper.prototype.endGame = function() {
 MineSweeper.prototype.syncDom = function() {
 	var tiles = this.domElement.getElementsByTagName("input");
 	var gridSize = this.playerMineMap.rowSize*this.playerMineMap.columnSize;
-	for(var i=0; i<gridSize; i++){
-		if(this.playerMineMap.tileValue(i+1) !== "-"){
+	var mapValue;
+
+    for(var i=0; i<gridSize; i++){
+        mapValue = this.playerMineMap.tileValue(i+1);
+		if(mapValue !== "-"){
 			tiles[i].checked = true;
+            tiles[i].nextSibling.innerHTML = mapValue !== 0 ? mapValue : "";
 		}
 	}
 };
@@ -85,7 +93,7 @@ MineSweeper.prototype.syncDom = function() {
 MineSweeper.prototype.buildDomMineField = function() {
 	var root = this.domElement,
 		grid = document.createDocumentFragment(),
-		id ="",
+		id = "",
 		rowSize = this.mineField.field.rowSize,
 		columnSize = this.mineField.field.columnSize,
 		row, cell;
@@ -102,17 +110,25 @@ MineSweeper.prototype.buildDomMineField = function() {
 				input = document.createElement("input"),
 				label = document.createElement("label");
 
-			id = "tile-"+((i-1)*columnSize + j);
+			id = "tile-"+((i-1)*rowSize + j);
 			cell = row.appendChild(td);
 			input.setAttribute("id", id);
 			input.setAttribute("type", "radio");
 			cell.appendChild(input);
 			label.setAttribute("for", id);
-			label.innerHTML =  this.mineField.field.tileValue((i-1)*columnSize + j);//((i-1)*this.columnSize + j);
+			//label.innerHTML =  this.mineField.field.tileValue((i-1)*rowSize + j);////((i-1)*rowSize + j);
+            
 			cell.appendChild(label);
 		}
 	}
 	root.appendChild(grid);
+};
+
+MineSweeper.prototype.clearDomMineField = function(){
+	var myNode = this.domElement;
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
 };
 
 

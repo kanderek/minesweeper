@@ -1,6 +1,6 @@
 function MineField(rowSize, columnSize, numberOfMines){
 	this.numberOfMines = numberOfMines || 10;
-	this.field =  new Grid(this.rowSize, this.columnSize);
+	this.field =  new Grid(rowSize, columnSize);
 	this.MINE = "!";
 
 	// this.field.createEmptyGrid();

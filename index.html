@@ -1,26 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="css/main.css"/>
 </head>
 
 <body>
 
-<table id="mine-field">
-</table>
+	<header>
+      <div class="headline">
+        <h1>Minesweeper</h1>
+        <nav class="game-menu">
+          <ul class="group">
+            <!-- <li class="select-new-puzzle"></li> -->
+            <li class="game-settings"></li>
+          </ul>
+        </nav>
 
+        <div class="game-menu-options">
+            <p class="game-rules">Minesweeper Rules</p>
+            <div class="new-game-options">
+              	<p>New Game</p>
+		    	<div id="select-puzzle-options">
+		              <input type="radio" id="dificulty-option1" class="toggle-select-list select-option" name="dificulty" value="easy" checked>
+		              <label for="dificulty-option1">Easy</label>
+		              <input type="radio" id="dificulty-option2" class="toggle-select-list select-option" name="dificulty" value="medium">
+		              <label for="dificulty-option2">Medium</label>
+		              <input type="radio" id="dificulty-option3" class="toggle-select-list select-option" name="dificulty" value="hard">
+		              <label for="dificulty-option3">Hard</label>
+		          </div>
+            </div>
+      </div>
+    </header>
+
+	<main>
+
+		<div class="difficulty">
+			<span>Easy</span>
+		</div>
+
+		<div class="timer">
+			<span>0:00</span>
+		</div>
+
+		<div class="validate">
+			<div class="face">
+			</div>
+		</div>
+
+		<div class="hint">
+			<span>Hint</span>
+		</div>
+
+		<div class="container">
+			<table id="mine-field">
+			</table>
+		</div>
+	</main>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="js/Timer.js"></script>
 <script src="js/Grid.js"></script>
 <script src="js/MineField.js"></script>
 <script src="js/MineSweeper.js"></script>
 <script>
 	var minesweeper = new MineSweeper(8, 8, 10, "mine-field");
+	var timer = new GameTimer(".timer");
+	var difficulty = "easy";
 
+	var timerDom = document.querySelector(".timer");
+	var difficultyDom = document.querySelector(".difficulty");
+	var faceDom = document.querySelector(".face");
+
+	timer.start();
 	minesweeper.domElement.addEventListener("click", handleChange, false);
 
 	function handleChange(event) {
 		console.log(event.target);
 		if(event.target.id){
 			var index = event.target.id.slice(5);
-			minesweeper.markPlayersMineMap(index);
+			if(minesweeper.markPlayersMineMap(index)){
+				losingMove();
+			}
 			minesweeper.syncDom();
 			if(minesweeper.isFieldClear()){
 				console.log("You win");
@@ -31,6 +91,93 @@
 			console.log("shift key was held down");
 		}
 	}
+
+	function losingMove(){
+		timer.stop();
+		faceDom.classList.add("dead-face");
+	}
+
+	$(".face").on("click", function(event){
+		var target = event.target ? event.target : event.srcElement;
+		if(!minesweeper.isFieldClear()){
+			losingMove();
+		}
+	});
+
+	$("#game-rules").on("click", function(event){
+	    var target = event.target ? event.target : event.srcElement;
+	    switch(target.className){
+	        case "game-rules-modal": 
+	            $("#game-rules").hide();
+	            break;
+	        case "close-rules-modal": 
+	            $("#game-rules").hide();
+	            break;
+	        case "play-game":
+	            newPuzzle(difficulty);
+	            $("#game-rules").hide();
+	            break;
+	    }
+	});
+
+	$(".game-menu li").on("click", function(event){
+	    var target = event.target ? event.target : event.srcElement;
+	    var classesOfClicked = target.className.split(" ");
+	    var mainClass = target.className;
+
+	    if(classesOfClicked.length > 1){ 
+	        mainClass = classesOfClicked[0];
+	    }
+
+	    console.log("game menu clicked");
+	    console.log(mainClass);
+
+	    switch(mainClass){
+	        case "game-settings": 
+	        	console.log('game-settings');
+	            $(".game-menu-options").toggle();
+	            $("li.game-settings").toggleClass("menu-button-active"); 
+	            break;
+	    }
+	});
+
+	$(".game-menu-options").on("click", function(event){
+	    var target = event.target ? event.target : event.srcElement;
+
+	    switch(target.className){
+	        case "game-rules": 
+	            // $(".game-menu-options").hide();
+	            $(this).hide();
+	            $("#game-rules").show();
+	            break;
+	    }
+	});
+
+	$("#select-puzzle-options").on("click", function (event) {
+	    var target = event.target ? event.target : event.srcElement;
+
+	    difficulty = target.value;
+	    faceDom.classList.remove("dead-face")
+	    faceDom.classList.add("happy-face");
+		difficultyDom.getElementsByTagName("span")[0].innerHTML = difficulty;
+		timer.stop();
+		timer.reset();
+		timer.start();
+
+	    switch(difficulty){
+	    	case "easy": 
+	    		minesweeper = new MineSweeper(8, 8, 10, "mine-field");
+	    		break;
+	    	case "medium":
+	    		minesweeper = new MineSweeper(16, 16, 40, "mine-field");
+	    		break;
+	    	case "hard":
+	    		minesweeper = new MineSweeper(30, 16, 99, "mine-field");
+	    		break;
+	    }
+	    $(".game-menu-options").hide();
+	});
+
 
 </script>
 </body>

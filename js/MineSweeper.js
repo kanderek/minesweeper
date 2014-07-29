@@ -30,6 +30,12 @@ MineSweeper.prototype.markPlayersMineMap = function(tileLocation, typeOfMark) {
     return losingMark;
 };
 
+MineSweeper.prototype.placePlayerFlag = function() {
+    //disable radio button
+    //add class to clicked tile
+    //
+};
+
 MineSweeper.prototype.connectedSafeTiles = function(tileLocation){
 	var zeroLocations = [];
 	var visited = {};
@@ -141,9 +147,7 @@ MineSweeper.prototype.buildDomMineField = function() {
 			input.setAttribute("id", id);
 			input.setAttribute("type", "radio");
 			cell.appendChild(input);
-			label.setAttribute("for", id);
-			//label.innerHTML =  this.mineField.field.tileValue((i-1)*rowSize + j);////((i-1)*rowSize + j);
-            
+			label.setAttribute("for", id);        
 			cell.appendChild(label);
 		}
 	}

@@ -12,6 +12,7 @@ Minesweeper is a grid of tiles, each of which may or may not cover hidden mines.
 - New game (easy 8x8 with 10 mines, medium 16x16 with 40 mines, hard 30x16 with 99 mines)
 - Validation of game (Win/Lose Notification)
 - Cheat/Hint (shows mines to player for approx. 2 seconds if requested)
+- Add flags using shift-click on field inputs
 
 ## Structure of Application 
 

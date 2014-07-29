@@ -53,7 +53,9 @@ nav.game-menu ul li {
   display: inline-block;
   text-align: center;
 /*  vertical-align: middle;*/
-  -webkit-box-sizing: border-box;
+  -webkit-box-sizing: border-box; /* Saf <5.1, */
+  -moz-box-sizing: border-box; /* Fx */
+  box-sizing: border-box; /* Ch, Saf 5.1+, IE 8+, Op 9+  */
   color: white;
   cursor: pointer;
   float: right;
@@ -99,7 +101,9 @@ nav.game-menu ul li.game-settings {
 }
 
 input[type="radio"].toggle-select-list + label {
-  -webkit-box-sizing: border-box;
+  -webkit-box-sizing: border-box; /* Saf <5.1, */
+  -moz-box-sizing: border-box; /* Fx */
+  box-sizing: border-box; /* Ch, Saf 5.1+, IE 8+, Op 9+  */
   display: block;
   border-bottom: 1px solid rgb(240,240,240);
   text-align: center;
@@ -291,7 +295,6 @@ main {
 	background-size: 100%;
 	background-repeat: no-repeat;
 	border-radius: 50%;
-/*	-webkit-transition: background-image 0.5s linear;*/
 }
 
 .happy-face {
@@ -314,6 +317,9 @@ main {
 	right: 0;
 	background-color: rgba(0,0,0,0.5);
 	-webkit-transition: opacity 1s linear;
+    -moz-transition: opacity 1s linear;
+    -o-transition: opacity 1s linear;
+    transition: opacity 1s linear;
 }
 
 #play-again-modal {
@@ -339,10 +345,18 @@ main {
 
 #play-again-modal div:first-child {
 	-webkit-transform: translateY(100%);
+    -moz-transform: translateY(100%);
+    -ms-transform: translateY(100%);
+    -o-transform: translateY(100%);
+    transform: translateY(100%);
 }
 
 #game-rules-modal div:first-child {
 	-webkit-transform: translateY(80%);
+    -moz-transform: translateY(80%);
+    -ms-transform: translateY(80%);
+    -o-transform: translateY(80%);
+    transform: translateY(80%);
 }
 
 #play-again-modal  a {

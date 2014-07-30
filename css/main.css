@@ -52,7 +52,7 @@ nav.game-menu ul {
 nav.game-menu ul li {
   display: inline-block;
   text-align: center;
-/*  vertical-align: middle;*/
+  vertical-align: top;
   -webkit-box-sizing: border-box; /* Saf <5.1, */
   -moz-box-sizing: border-box; /* Fx */
   box-sizing: border-box; /* Ch, Saf 5.1+, IE 8+, Op 9+  */

@@ -137,14 +137,14 @@ MineField.prototype.placeMines = function() {
 	var minesLeft = this.numberOfMines,
 		gridSize = this.field.rowSize*this.field.columnSize,
 		testLocation,
-		mineLocations = [];
+		mineLocations = {};
 
 	while(minesLeft > 0) {
 
 		testLocation = Math.ceil(Math.random()*gridSize);
 		if (!(testLocation in mineLocations)) {
 			this.field.tileValue(testLocation, this.MINE);
-			mineLocations.push(testLocation);
+			mineLocations[testLocation] = true;
 			minesLeft -= 1;
 		}
 	}
@@ -196,6 +196,7 @@ MineSweeper.prototype.markPlayersMineMap = function(tileLocation, typeOfMark) {
 			this.playerMineMap.tileValue(tileLocation, fieldValue);
 		}
 		else{
+			this.playerMineMap.tileValue(tileLocation, fieldValue);
 			this.connectedSafeTiles(tileLocation);
 		}
 	}
@@ -266,8 +267,8 @@ MineSweeper.prototype.addMineClass = function(mineClass) {
     var labels = this.domElement.getElementsByTagName("label");
     var mineLocations = this.mineField.mineLocations;
 
-    for(var i=0, numberOfMines=mineLocations.length; i<numberOfMines; i++){
-        labels[mineLocations[i] - 1].classList.add(mineClass);
+    for(var location in mineLocations){
+        labels[parseInt(location, 10) - 1].classList.add(mineClass);
     }
 };
 
@@ -275,8 +276,8 @@ MineSweeper.prototype.removeMineClass = function(mineClass) {
     var labels = this.domElement.getElementsByTagName("label");
     var mineLocations = this.mineField.mineLocations;
 
-    for(var i=0, numberOfMines=mineLocations.length; i<numberOfMines; i++){
-        labels[mineLocations[i] - 1].classList.remove(mineClass);
+    for(var location in mineLocations){
+        labels[parseInt(location, 10) - 1].classList.remove(mineClass);
     }
 };
 
@@ -354,10 +355,13 @@ var gameRulesModalDom = document.getElementById("game-rules-modal");
 timer.start();
 minesweeper.domElement.addEventListener("click", handleChange, false);
 
+//TODO: refactor
+//Gnarly nested ifs 
 function handleChange(event) {
 	var target = event.target ? event.target : event.srcElement;
 	var flagElement = target.tagName.toLowerCase() === "label" ? target : target.nextSibling;
 	var id = target.id ? target.id : target.previousSibling.id;
+    var targetInput = document.getElementById(id);
 
 	showAnxiety();
 	if(id){
@@ -365,28 +369,33 @@ function handleChange(event) {
 		var locationValue = minesweeper.mineField.field.tileValue(index);
 
 		if(!event.shiftKey){
-			if(minesweeper.markPlayersMineMap(index)){
-				losingMove();
-			}
-			if(locationValue !== 0){
-				flagElement.innerHTML = locationValue;
-			}
-			minesweeper.syncDom();
-			if(minesweeper.isFieldClear()){
-				winningMove();
-			}
+            if(!targetInput.disabled){
+    			if(minesweeper.markPlayersMineMap(index)){
+    				losingMove();
+    			}
+    			if(locationValue !== 0){
+    				flagElement.innerHTML = locationValue;
+    			}
+    			minesweeper.syncDom();
+    			if(minesweeper.isFieldClear()){
+    				winningMove();
+    			}
+            }
 		}
 		else {
+            console.log("shift key held");
 			event.preventDefault();
 			if(flagElement.classList.contains("flag")){
 				flagElement.classList.remove("flag");
-				flagElement.previousSibling.disabled = false;
+				// flagElement.previousSibling.disabled = false;
+                targetInput.disabled = false;
 				flagCount = flagCount > 0 ? flagCount - 1 : 0;
 				difficultyDom.getElementsByTagName("span")[1].innerHTML = mineCount - flagCount;
 			}
 			else {
 				flagElement.classList.add("flag");
-				flagElement.previousSibling.disabled = true;
+				// flagElement.previousSibling.disabled = true;
+                targetInput.disabled = true;
 				flagCount = flagCount < mineCount ? flagCount + 1 : mineCount;
 				difficultyDom.getElementsByTagName("span")[1].innerHTML = mineCount - flagCount;
 			}
@@ -465,7 +474,7 @@ difficultySelectDom.addEventListener("click", function (event) {
 function newGameByDifficulty(difficulty) {
 	var spans = difficultyDom.getElementsByTagName("span");
 
-    faceDom.classList.remove("dead-face")
+    faceDom.classList.remove("dead-face");
     faceDom.classList.add("happy-face");
 	spans[0].innerHTML = difficulty;
 
@@ -473,8 +482,9 @@ function newGameByDifficulty(difficulty) {
 	timer.reset();
 	timer.start();
 
+    flagCount = 0;
     switch(difficulty){
-    	case "easy": 
+        case "easy": 
     		mineCount = 10;
     		minesweeper = new MineSweeper(8, 8, mineCount, "mine-field");
     		spans[1].innerHTML = mineCount;

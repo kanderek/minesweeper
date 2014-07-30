@@ -11,14 +11,14 @@ MineField.prototype.placeMines = function() {
 	var minesLeft = this.numberOfMines,
 		gridSize = this.field.rowSize*this.field.columnSize,
 		testLocation,
-		mineLocations = [];
+		mineLocations = {};
 
 	while(minesLeft > 0) {
 
 		testLocation = Math.ceil(Math.random()*gridSize);
 		if (!(testLocation in mineLocations)) {
 			this.field.tileValue(testLocation, this.MINE);
-			mineLocations.push(testLocation);
+			mineLocations[testLocation] = true;
 			minesLeft -= 1;
 		}
 	}

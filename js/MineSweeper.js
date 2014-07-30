@@ -24,6 +24,7 @@ MineSweeper.prototype.markPlayersMineMap = function(tileLocation, typeOfMark) {
 			this.playerMineMap.tileValue(tileLocation, fieldValue);
 		}
 		else{
+			this.playerMineMap.tileValue(tileLocation, fieldValue);
 			this.connectedSafeTiles(tileLocation);
 		}
 	}
@@ -94,8 +95,8 @@ MineSweeper.prototype.addMineClass = function(mineClass) {
     var labels = this.domElement.getElementsByTagName("label");
     var mineLocations = this.mineField.mineLocations;
 
-    for(var i=0, numberOfMines=mineLocations.length; i<numberOfMines; i++){
-        labels[mineLocations[i] - 1].classList.add(mineClass);
+    for(var location in mineLocations){
+        labels[parseInt(location, 10) - 1].classList.add(mineClass);
     }
 };
 
@@ -103,8 +104,8 @@ MineSweeper.prototype.removeMineClass = function(mineClass) {
     var labels = this.domElement.getElementsByTagName("label");
     var mineLocations = this.mineField.mineLocations;
 
-    for(var i=0, numberOfMines=mineLocations.length; i<numberOfMines; i++){
-        labels[mineLocations[i] - 1].classList.remove(mineClass);
+    for(var location in mineLocations){
+        labels[parseInt(location, 10) - 1].classList.remove(mineClass);
     }
 };
 

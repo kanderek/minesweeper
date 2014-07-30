@@ -77,12 +77,20 @@ nav.game-menu ul li.game-settings {
   background-position: 50%;
 }
 
+.game-settings:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-button-active {
+	background-color: rgb(40, 40, 40);
+}
+
 .game-menu-options {
   position: absolute;
   right: 0;
   top: 50px;
   width: 25%;
-  background-color: rgb(24,24,24);
+  background-color: rgb(40,40,40);
   color: rgb(240, 240, 240);
   z-index: 5;
   line-height: 40px;
@@ -128,7 +136,7 @@ input[type="radio"].select-option + label:hover {
 }
 
 .game-menu-options > p:hover {
-	background-color: rgba(255,255,255,0.2);
+	background-color: rgba(255,255,255,0.1);
 }
 
 .game-menu-options p {
@@ -295,6 +303,10 @@ main {
 	background-size: 100%;
 	background-repeat: no-repeat;
 	border-radius: 50%;
+}
+
+.face:hover {
+	background-image: url("../img/worried_face.png");
 }
 
 .happy-face {
